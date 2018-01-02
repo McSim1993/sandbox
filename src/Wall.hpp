@@ -8,7 +8,7 @@
 
 class Wall {
 public:
-    Wall()
+    Wall() = default;
 };
 
 
