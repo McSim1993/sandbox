@@ -17,7 +17,7 @@ sf::Uint8 Car::randomColor() {
 }
 
 void Car::tick() {
-    this->move(this->direction);
+    this->move(this->direction / 30.0f);
 }
 
 void Car::rotate(float angle) {

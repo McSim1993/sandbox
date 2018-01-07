@@ -27,8 +27,8 @@ private:
     sf::RenderWindow* window = NULL;
     const sf::Color bgColor = sf::Color(167, 200, 209);
     sf::Event::MouseMoveEvent mousePos;
-    std::list<std::list<sf::Shape*>*> walls;
-    sf::ConvexShape* newWall = NULL;
+    std::list<std::list<Wall*>*> walls;
+    Wall* newWall = NULL;
 
     void processKeyPressed(sf::Event event);
 

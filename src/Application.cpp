@@ -6,7 +6,7 @@
 
 void Application::start() {
     std::srand(unsigned(std::time(0)));
-    this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "", sf::Style::None);
+    this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "");
     this->window->setVerticalSyncEnabled(true);
 
     std::vector<sf::Drawable*> drawable;
@@ -15,8 +15,6 @@ void Application::start() {
         car.setPosition(100, WINDOW_HEIGHT/2);
         drawable.push_back(&car);
     }
-
-    std::vector<Wall> walls(2);
 
 
     while (this->window->isOpen())
@@ -54,6 +52,16 @@ void Application::start() {
         for (auto &obj : drawable) {
             this->window->draw(*obj);
         }
+        if (this->newWall) {
+            window->draw(*this->newWall);
+        }
+        for (auto &chain : walls) {
+            for (auto &wall : *chain) {
+                window->draw(*wall);
+            }
+        }
+
+        printf("Chains: %d. Walls: %d\n", (int) this->walls.size(), this->walls.back() ? (int) this->walls.back()->size() : 0);
 
         this->window->display();
     }
@@ -64,7 +72,14 @@ void Application::processKeyPressed(sf::Event event) {
         case sf::Keyboard::Escape:
         case sf::Keyboard::Q:
             this->window->close();
+            delete this->window;
             break;
+
+        case sf::Keyboard::Space:
+            if (this->currentInputState == NONE) {
+                this->currentInputState = DRAW;
+                this->walls.push_back(new std::list<Wall*>());
+            }
         default:
             break;
 
@@ -72,20 +87,38 @@ void Application::processKeyPressed(sf::Event event) {
 }
 
 void Application::processKeyReleased(sf::Event event) {
-
+    switch (event.key.code) {
+        case sf::Keyboard::Space:
+            this->currentInputState = NONE;
+            delete this->newWall;
+            this->newWall = NULL;
+            this->mousePos = {
+                    x: 0,
+                    y: 0
+            };
+            break;
+        default:
+            break;
+    }
 }
 
 void Application::processMouseKeyPressed(sf::Event event) {
     switch (event.mouseButton.button) {
         case sf::Mouse::Left:
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-                this->currentInputState = DRAW;
-                this->walls.push_back(new std::list<sf::Shape*>());
-            } else {
-                this->currentInputState = DRAG;
-            }
             this->mousePos.x = event.mouseButton.x;
             this->mousePos.y = event.mouseButton.y;
+            switch (this->currentInputState) {
+                case DRAW:
+                    if (this->newWall) {
+                        this->walls.back()->push_back(this->newWall);
+                        this->newWall = NULL;
+                    }
+                    break;
+                case NONE:
+                    this->currentInputState = DRAG;
+                default:
+                    break;
+            }
             break;
         default:
             break;
@@ -102,9 +135,20 @@ void Application::processMouseMoved(sf::Event event) {
             this->mousePos = event.mouseMove;
             break;
         case DRAW:
-//            this->newWall = new sf::ConvexShape();
-//            this->newWall->setPointCount(4);
+            delete this->newWall;
 
+            if (this->mousePos.x == 0 && this->mousePos.y == 0) {
+                this->mousePos = event.mouseMove;
+            } else {
+                if (this->walls.back()->empty()) {
+                    this->newWall = new Wall(sf::Vector2f(this->mousePos.x, this->mousePos.y),
+                                             sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+                } else {
+                    auto last = this->walls.back()->back();
+                    this->newWall = new Wall(last->getPoint(1), last->getPoint(0),
+                                             sf::Vector2f(event.mouseMove.x, event.mouseMove.y));
+                }
+            }
             break;
         case NONE:
             break;
@@ -112,5 +156,12 @@ void Application::processMouseMoved(sf::Event event) {
 }
 
 void Application::processMouseKeyReleased(sf::Event event) {
-    this->currentInputState = NONE;
+    switch (this->currentInputState) {
+        case DRAG:
+            this->currentInputState = NONE;
+            break;
+
+        default:
+            break;
+    }
 }

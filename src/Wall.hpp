@@ -5,10 +5,13 @@
 #ifndef SANDBOX_WALL_HPP
 #define SANDBOX_WALL_HPP
 
+#include <SFML/Graphics.hpp>
+#define WALL_THICKNESS 15.0f
 
-class Wall {
+class Wall: public sf::ConvexShape {
 public:
-    Wall() = default;
+    Wall(sf::Vector2f begin, sf::Vector2f end);
+    Wall(sf::Vector2f first, sf::Vector2f second, sf::Vector2f end);
 };
 
 
