@@ -8,7 +8,7 @@
 
 void Application::start() {
     std::srand(unsigned(std::time(0)));
-    this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "");
+    this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "", sf::Style::None);
     this->window->setVerticalSyncEnabled(true);
 
     std::vector<Car> cars(15);
@@ -180,8 +180,7 @@ void Application::processMouseKeyReleased(sf::Event event) {
 
 void Application::processWheelScroll(sf::Event event) {
     auto tmp = this->window->getView();
-    this->zoom +=  event.mouseWheelScroll.delta / 10000;
-    tmp.zoom(this->zoom);
+    tmp.zoom(1 - event.mouseWheelScroll.delta / 50.0f);
     this->window->setView(tmp);
 }
 

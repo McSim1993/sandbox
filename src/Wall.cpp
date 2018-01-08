@@ -20,6 +20,7 @@ Wall::Wall(sf::Vector2f begin, sf::Vector2f end) {
     direction *= (-1.0f);
     this->setPoint(2, begin + rotationNeg.transformPoint(direction));
     this->setPoint(3, begin + rotationPos.transformPoint(direction));
+    this->setFillColor(sf::Color::Black);
 }
 
 Wall::Wall(sf::Vector2f first, sf::Vector2f second, sf::Vector2f third, sf::Vector2f fourth) {
@@ -28,4 +29,5 @@ Wall::Wall(sf::Vector2f first, sf::Vector2f second, sf::Vector2f third, sf::Vect
     this->setPoint(1, second);
     this->setPoint(2, third);
     this->setPoint(3, fourth);
+    this->setFillColor(sf::Color::Black);
 }

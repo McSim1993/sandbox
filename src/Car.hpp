@@ -14,11 +14,11 @@
 #define CAR_HEIGHT 80
 #define CAR_WIDTH 120
 
-class Car: public sf::RectangleShape {
+class Car: public sf::ConvexShape {
 public:
     Car();
 
-    void tick(std::__1::list<Wall *> list);
+    void tick(std::list<Wall *> list);
 
     bool isActive() { return _active; }
 
@@ -30,6 +30,8 @@ private:
     void rotate(float angle);
 
     static sf::Uint8 randomColor();
+
+    bool intersects(sf::ConvexShape* pWall);
 };
 
 
