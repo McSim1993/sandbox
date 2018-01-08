@@ -11,7 +11,7 @@
 class Wall: public sf::ConvexShape {
 public:
     Wall(sf::Vector2f begin, sf::Vector2f end);
-    Wall(sf::Vector2f first, sf::Vector2f second, sf::Vector2f end);
+    Wall(sf::Vector2f first, sf::Vector2f second, sf::Vector2f third, sf::Vector2f fourth);
 };
 
 

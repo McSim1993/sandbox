@@ -27,8 +27,9 @@ private:
     sf::RenderWindow* window = NULL;
     const sf::Color bgColor = sf::Color(167, 200, 209);
     sf::Event::MouseMoveEvent mousePos;
-    std::list<std::list<Wall*>*> walls;
+    std::list<Wall*> walls;
     Wall* newWall = NULL;
+    float zoom = 1;
 
     void processKeyPressed(sf::Event event);
 
@@ -39,6 +40,11 @@ private:
     void processMouseMoved(sf::Event event);
 
     void processMouseKeyReleased(sf::Event event);
+
+    void processWheelScroll(sf::Event event);
+
+    void saveWalls();
+    void loadWalls();
 };
 
 
