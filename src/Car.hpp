@@ -12,11 +12,18 @@
 #include "Wall.hpp"
 
 #define CAR_HEIGHT 80
-#define CAR_WIDTH 120
+#define CAR_WIDTH 150
 
-class Car: public sf::ConvexShape {
+#define SENSORS_COUNT 5
+#define SENSOR_LEN 100
+
+class Car {
 public:
     Car();
+
+    void draw(sf::RenderWindow* window);
+
+    void move(float x, float y);
 
     void tick(std::list<Wall *> list);
 
@@ -24,6 +31,8 @@ public:
 
 private:
     sf::Vector2f direction;
+    sf::ConvexShape model;
+    std::vector<sf::ConvexShape> sensors = std::vector<sf::ConvexShape>(SENSORS_COUNT);
 
     bool _active = true;
 
@@ -32,6 +41,12 @@ private:
     static sf::Uint8 randomColor();
 
     bool intersects(sf::ConvexShape* pWall);
+
+    void generateModel();
+
+    void generateSensors();
+
+    void move(sf::Vector2<float> vector2);
 };
 
 

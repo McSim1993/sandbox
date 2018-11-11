@@ -29,7 +29,8 @@ private:
     sf::Event::MouseMoveEvent mousePos;
     std::list<Wall*> walls;
     Wall* newWall = NULL;
-    float zoom = 1;
+    sf::Font font;
+    sf::Text debugText;
 
     void processKeyPressed(sf::Event event);
 
@@ -45,6 +46,8 @@ private:
 
     void saveWalls();
     void loadWalls();
+
+    void drawMousePos(sf::Event::MouseMoveEvent event);
 };
 
 

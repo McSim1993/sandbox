@@ -5,15 +5,27 @@
 #include "Application.hpp"
 #include <fstream>
 #include <ostream>
+#include <iostream>
+#include <sstream>
 
 void Application::start() {
     std::srand(unsigned(std::time(0)));
     this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "", sf::Style::None);
     this->window->setVerticalSyncEnabled(true);
 
+    if (!this->font.loadFromFile("/usr/share/fonts/truetype/open-sans-elementary/OpenSans-Regular.ttf")) {
+        std::cout << "ERROR" << std::endl;
+    };
+
+    this->debugText.setFont(this->font);
+    this->debugText.setPosition(100,100);
+    this->debugText.setCharacterSize(24);
+    this->debugText.setColor(sf::Color::Red);
+
+
     std::vector<Car> cars(15);
     for (auto &car : cars) {
-        car.setPosition(100, WINDOW_HEIGHT/2);
+        car.move(100, WINDOW_HEIGHT/2);
     }
 
     this->loadWalls();
@@ -55,7 +67,7 @@ void Application::start() {
 
         for (auto &car : cars) {
             if (car.isActive()) {
-                this->window->draw(car);
+                car.draw(this->window);
             }
         }
         if (this->newWall) {
@@ -72,7 +84,7 @@ void Application::start() {
 //            tmp.setPoint(3, sf::Vector2f(a.left + a.width, a.top));
 //            tmp.setFillColor(sf::Color(255, 0, 0, 40));
 //            window->draw(tmp);
-        }
+        } ;
 
         this->window->display();
     }
@@ -138,6 +150,8 @@ void Application::processMouseKeyPressed(sf::Event event) {
 }
 
 void Application::processMouseMoved(sf::Event event) {
+    this->drawMousePos(event.mouseMove);
+
     sf::View tmp;
     switch (this->currentInputState) {
         case DRAG:
@@ -206,6 +220,14 @@ void Application::loadWalls() {
             this->walls.push_back(new Wall(p1, p2, p3, p4));
         }
     }
+}
+
+void Application::drawMousePos(sf::Event::MouseMoveEvent event) {
+    std::stringstream ss;
+    auto x = this->window->getView().getCenter().x - WINDOW_WIDTH/2;
+    auto y = this->window->getView().getCenter().y - WINDOW_HEIGHT/2;
+    ss << "X: " << event.x + x  << "; Y: " << event.y + y;
+    this->debugText.setString(ss.str());
 }
 
 
