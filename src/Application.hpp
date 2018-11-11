@@ -48,6 +48,7 @@ private:
     void loadWalls();
 
     void drawMousePos(sf::Event::MouseMoveEvent event);
+    void drawCarUI(Car car);
 };
 
 

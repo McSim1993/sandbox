@@ -13,14 +13,13 @@ void Application::start() {
     this->window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "", sf::Style::None);
     this->window->setVerticalSyncEnabled(true);
 
-    if (!this->font.loadFromFile("/usr/share/fonts/truetype/open-sans-elementary/OpenSans-Regular.ttf")) {
-        std::cout << "ERROR" << std::endl;
-    };
-
+    if (!font.loadFromFile("../OpenSans-Regular.ttf")) {
+        std::cout << "Error loading font" << std::endl;
+    }
     this->debugText.setFont(this->font);
     this->debugText.setPosition(100,100);
     this->debugText.setCharacterSize(24);
-    this->debugText.setColor(sf::Color::Red);
+    this->debugText.setFillColor(sf::Color::Red);
 
 
     std::vector<Car> cars(15);
@@ -32,7 +31,7 @@ void Application::start() {
 
     while (this->window->isOpen())
     {
-        sf::Event event;
+        sf::Event event{};
         while (this->window->pollEvent(event))
         {
             switch (event.type) {
@@ -65,7 +64,11 @@ void Application::start() {
             car.tick(this->walls);
         }
 
+        auto maxFitnessCar = cars[0];
         for (auto &car : cars) {
+            if (car.getFitness() > maxFitnessCar.getFitness()) {
+                maxFitnessCar = car;
+            }
             if (car.isActive()) {
                 car.draw(this->window);
             }
@@ -75,17 +78,15 @@ void Application::start() {
         }
         for (auto &wall : walls) {
             window->draw(*wall);
-//            sf::ConvexShape tmp;
-//            tmp.setPointCount(4);
-//            auto a = wall->getGlobalBounds();
-//            tmp.setPoint(0, sf::Vector2f(a.left, a.top));
-//            tmp.setPoint(1, sf::Vector2f(a.left, a.top + a.height));
-//            tmp.setPoint(2, sf::Vector2f(a.left + a.width, a.top + a.height));
-//            tmp.setPoint(3, sf::Vector2f(a.left + a.width, a.top));
-//            tmp.setFillColor(sf::Color(255, 0, 0, 40));
-//            window->draw(tmp);
-        } ;
+        }
 
+        if (this->currentInputState == NONE) {
+            const auto center = maxFitnessCar.getPosition();
+            auto view = this->window->getView();
+            view.setCenter(center);
+            this->window->setView(view);
+        }
+        this->drawCarUI(maxFitnessCar);
         this->window->display();
     }
 }
@@ -150,8 +151,6 @@ void Application::processMouseKeyPressed(sf::Event event) {
 }
 
 void Application::processMouseMoved(sf::Event event) {
-    this->drawMousePos(event.mouseMove);
-
     sf::View tmp;
     switch (this->currentInputState) {
         case DRAG:
@@ -228,6 +227,13 @@ void Application::drawMousePos(sf::Event::MouseMoveEvent event) {
     auto y = this->window->getView().getCenter().y - WINDOW_HEIGHT/2;
     ss << "X: " << event.x + x  << "; Y: " << event.y + y;
     this->debugText.setString(ss.str());
+}
+
+void Application::drawCarUI(Car car) {
+    std::stringstream ss;
+    ss << "Fitness: " << car.getFitness();
+    this->debugText.setString(ss.str());
+    window->draw(debugText);
 }
 
 
